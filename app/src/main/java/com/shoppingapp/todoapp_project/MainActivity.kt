@@ -9,6 +9,8 @@ import com.shoppingapp.todoapp_project.navigation.NavGraphBuilder
 import com.shoppingapp.todoapp_project.ui.theme.TodoAppProjectTheme
 
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

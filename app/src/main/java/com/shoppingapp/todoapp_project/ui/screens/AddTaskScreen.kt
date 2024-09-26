@@ -38,6 +38,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.shoppingapp.todoapp_project.alarm.AlarmImpl
+import com.shoppingapp.todoapp_project.alarm.AlarmItem
+import com.shoppingapp.todoapp_project.alarm.AlarmScheduler
 import com.shoppingapp.todoapp_project.model.Task
 import com.shoppingapp.todoapp_project.mvvm.MainVMFactory
 import com.shoppingapp.todoapp_project.mvvm.MainViewModel
@@ -48,6 +51,7 @@ import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -134,6 +138,21 @@ fun AddTaskScreen(
                         isCompleted = textIsCompleted
                     )
 
+                    val alarmScheduler : AlarmScheduler = AlarmImpl(context)
+
+                    val alarmItem = AlarmItem(
+                        LocalDateTime.of(
+                            dueDate.year,
+                            dueDate.month,
+                            dueDate.dayOfMonth,
+                            dueTime.hour,
+                            dueTime.minute
+                        ),
+                        textTitle
+                    )
+
+                    alarmItem.let(alarmScheduler::schedule)
+
                     viewModel.addTask(task)
                     navController.popBackStack()
                 }
@@ -181,7 +200,6 @@ fun AddTaskScreen(
                 }, label = {
                     Text(text = "Enter Title")
                 }
-
             )
 
             TextField(
@@ -196,9 +214,17 @@ fun AddTaskScreen(
                 }
             )
 
-            Row (modifier = modifier.fillMaxWidth().height(70.dp)) {
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(70.dp)
+            ) {
 
-                Box(modifier = Modifier.fillMaxHeight().weight(1f)){
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                ) {
                     Button(
                         modifier = Modifier.align(Alignment.Center),
                         onClick = {
@@ -210,14 +236,18 @@ fun AddTaskScreen(
 
 
                 }
-                Box(modifier = Modifier.fillMaxHeight().weight(1f)){
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                ) {
                     Text(text = formattedDate, modifier = Modifier.align(Alignment.Center))
                 }
 
             }
 
-              Row () {
-                Box(modifier = Modifier.weight(1f)){
+            Row() {
+                Box(modifier = Modifier.weight(1f)) {
                     Button(
                         onClick = {
                             timePickerState.show()
@@ -226,7 +256,7 @@ fun AddTaskScreen(
                         Text(text = "Select Due Time")
                     }
                 }
-                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center){
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                     Text(text = formattedTime)
                 }
 
@@ -236,7 +266,7 @@ fun AddTaskScreen(
 
     }
 
-    MaterialDialog (
+    MaterialDialog(
         dialogState = timePickerState,
         buttons = {
             positiveButton("Ok")
@@ -246,31 +276,29 @@ fun AddTaskScreen(
         timepicker(
             initialTime = LocalTime.NOON,
             title = "Pick a time"
-        ){
+        ) {
             dueTime = it
         }
     }
 
 
-    MaterialDialog (
+    MaterialDialog(
         dialogState = datePickerState,
         buttons = {
             positiveButton("Ok")
             negativeButton("Cancel")
         }
-    ){
+    ) {
         datepicker(
             initialDate = LocalDate.now(),
             title = "Pick a date"
-        ){
+        ) {
             dueDate = it
         }
     }
 
 
 }
-
-
 
 
 @Preview

@@ -189,7 +189,6 @@ fun TaskItem(modifier: Modifier = Modifier, task: Task, repository: Repository) 
                 )
             }
 
-
             Divider(
                 thickness = 1.dp,
                 color = Color.Gray,
