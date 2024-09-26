@@ -1,5 +1,6 @@
 package com.shoppingapp.todoapp_project.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -138,7 +139,7 @@ fun AddTaskScreen(
                         isCompleted = textIsCompleted
                     )
 
-                    val alarmScheduler : AlarmScheduler = AlarmImpl(context)
+                    val alarmScheduler: AlarmScheduler = AlarmImpl(context)
 
                     val alarmItem = AlarmItem(
                         LocalDateTime.of(
@@ -153,6 +154,8 @@ fun AddTaskScreen(
 
                     alarmItem.let(alarmScheduler::schedule)
 
+                    Toast.makeText(context, "${alarmItem.dateTime.hour}  ${alarmItem.dateTime.minute}", Toast.LENGTH_SHORT).show()
+
                     viewModel.addTask(task)
                     navController.popBackStack()
                 }
@@ -164,7 +167,6 @@ fun AddTaskScreen(
             TopAppBar(title = {
                 Text(text = "Add a Task")
             }, navigationIcon = {
-
                 IconButton(onClick = {
                     navController.popBackStack()
                 }) {
