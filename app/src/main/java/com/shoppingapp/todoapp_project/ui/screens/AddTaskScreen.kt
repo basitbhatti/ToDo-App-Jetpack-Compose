@@ -39,9 +39,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.shoppingapp.todoapp_project.alarm.AlarmImpl
 import com.shoppingapp.todoapp_project.alarm.AlarmItem
 import com.shoppingapp.todoapp_project.alarm.AlarmScheduler
+import com.shoppingapp.todoapp_project.alarm.AlarmSchedulerImpl
 import com.shoppingapp.todoapp_project.model.Task
 import com.shoppingapp.todoapp_project.mvvm.MainVMFactory
 import com.shoppingapp.todoapp_project.mvvm.MainViewModel
@@ -139,7 +139,7 @@ fun AddTaskScreen(
                         isCompleted = textIsCompleted
                     )
 
-                    val alarmScheduler: AlarmScheduler = AlarmImpl(context)
+                    val alarmScheduler: AlarmScheduler = AlarmSchedulerImpl(context)
 
                     val alarmItem = AlarmItem(
                         LocalDateTime.of(
@@ -149,12 +149,13 @@ fun AddTaskScreen(
                             dueTime.hour,
                             dueTime.minute
                         ),
-                        textTitle
+                        textTitle,
+                        textDescription?:""
                     )
 
                     alarmItem.let(alarmScheduler::schedule)
 
-                    Toast.makeText(context, "${alarmItem.dateTime.hour}  ${alarmItem.dateTime.minute}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "${alarmItem.alarmTime.hour}  ${alarmItem.alarmTime.minute}", Toast.LENGTH_SHORT).show()
 
                     viewModel.addTask(task)
                     navController.popBackStack()

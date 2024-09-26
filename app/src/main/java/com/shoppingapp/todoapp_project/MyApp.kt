@@ -5,17 +5,15 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 
 class MyApp : Application() {
+
     override fun onCreate() {
         super.onCreate()
 
+        val channel = "alarm_channel"
         val notificationManager = getSystemService(NotificationManager::class.java)
+        val notificationChannel =
+            NotificationChannel(channel, channel, NotificationManager.IMPORTANCE_HIGH)
 
-        val channel = NotificationChannel(
-            "alarm_channel",
-            "Alarm Channel",
-            NotificationManager.IMPORTANCE_HIGH
-        )
-
-        notificationManager.createNotificationChannel(channel)
+        notificationManager.createNotificationChannel(notificationChannel)
     }
 }

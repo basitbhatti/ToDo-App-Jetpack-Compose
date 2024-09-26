@@ -4,35 +4,27 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.shoppingapp.todoapp_project.R
 
 class AlarmReceiver() : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
 
-        val message = intent?.getStringExtra("MESSAGE") ?: return
-        Log.d("TAGAlarm", "onReceive: $message")
+        val title = intent?.getStringExtra("title")
+        val desc = intent?.getStringExtra("desc")
 
         val channel_id = "alarm_channel"
 
-        context?.also { ctx ->
+        context?.also {
+            val notificationManager = it.getSystemService(NotificationManager::class.java)
 
-            val notificationManager =
-                ctx.getSystemService(NotificationManager::class.java) as NotificationManager
-
-            val builder = NotificationCompat.Builder(ctx, channel_id)
-                .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle("Reminder: "+message)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+            val builder = NotificationCompat.Builder(it, channel_id)
+                .setContentTitle(title)
+                .setContentText(desc)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
 
             notificationManager.notify(1, builder.build())
-
-            Log.d("TAGAlarm", "notificationCreated")
-
-
         }
-
 
     }
 }
