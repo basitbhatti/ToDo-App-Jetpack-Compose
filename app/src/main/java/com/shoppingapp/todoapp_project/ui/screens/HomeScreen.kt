@@ -1,5 +1,6 @@
 package com.shoppingapp.todoapp_project.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -55,7 +56,7 @@ import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) {
+fun HomeScreen(modifier: Modifier = Modifier.background(Color(0xFFF9F9F9)), navController: NavHostController) {
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
