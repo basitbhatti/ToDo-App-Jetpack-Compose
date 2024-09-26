@@ -3,8 +3,10 @@ package com.shoppingapp.todoapp_project.ui.screens
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -41,7 +43,6 @@ import com.shoppingapp.todoapp_project.mvvm.MainVMFactory
 import com.shoppingapp.todoapp_project.mvvm.MainViewModel
 import com.shoppingapp.todoapp_project.mvvm.Repository
 import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
@@ -195,9 +196,9 @@ fun AddTaskScreen(
                 }
             )
 
-            Row () {
+            Row (modifier = modifier.fillMaxWidth().height(70.dp)) {
 
-                Box(modifier = Modifier.weight(1f)){
+                Box(modifier = Modifier.fillMaxHeight().weight(1f)){
                     Button(
                         modifier = Modifier.align(Alignment.Center),
                         onClick = {
@@ -209,7 +210,7 @@ fun AddTaskScreen(
 
 
                 }
-                Box(modifier = Modifier.weight(1f)){
+                Box(modifier = Modifier.fillMaxHeight().weight(1f)){
                     Text(text = formattedDate, modifier = Modifier.align(Alignment.Center))
                 }
 
@@ -230,10 +231,6 @@ fun AddTaskScreen(
                 }
 
             }
-
-
-
-
 
         }
 
@@ -258,9 +255,7 @@ fun AddTaskScreen(
     MaterialDialog (
         dialogState = datePickerState,
         buttons = {
-            positiveButton("Ok"){
-
-            }
+            positiveButton("Ok")
             negativeButton("Cancel")
         }
     ){
@@ -274,6 +269,9 @@ fun AddTaskScreen(
 
 
 }
+
+
+
 
 @Preview
 @Composable

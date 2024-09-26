@@ -72,6 +72,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     val room_version = "2.6.1"
 
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.0")
     implementation("io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc")
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
