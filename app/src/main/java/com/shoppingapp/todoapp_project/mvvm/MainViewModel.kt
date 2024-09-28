@@ -1,22 +1,72 @@
 package com.shoppingapp.todoapp_project.mvvm
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.shoppingapp.todoapp_project.model.Task
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class MainViewModel(val repository: Repository) : ViewModel() {
 
-    val taskList : LiveData<List<Task>> = repository.listTasks
+    val taskList: LiveData<List<Task>> = repository.listTasks
 
-    fun addTask (task: Task){
+    init {
+        taskList.observeForever { tasks->
+            categorizeLists(tasks, LocalDate.now())
+        }
+    }
+
+
+    private val _listCompleteTasks: MutableLiveData<List<Task>> = MutableLiveData()
+    private val _listIncompleteTasks: MutableLiveData<List<Task>> = MutableLiveData()
+    private val _listOverdueTasks: MutableLiveData<List<Task>> = MutableLiveData()
+
+    val listCompleteTasks: LiveData<List<Task>> = _listCompleteTasks
+    val listIncompleteTasks: LiveData<List<Task>> = _listIncompleteTasks
+    val listOverdueTasks: LiveData<List<Task>> = _listOverdueTasks
+
+
+    fun categorizeLists(taskList: List<Task>, dateToday: LocalDate) {
+        val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy")
+        val complete = ArrayList<Task>()
+        val incomplete = ArrayList<Task>()
+        val overdue = ArrayList<Task>()
+
+
+        taskList.forEach { task ->
+
+            val dueDate = LocalDate.parse(task.dueDate, formatter)
+
+            if (task.isCompleted) {
+                complete.add(task)
+            } else if (dueDate.isBefore(dateToday)) {
+                overdue.add(task)
+            } else {
+                incomplete.add(task)
+            }
+
+        }
+
+
+        _listCompleteTasks.value = complete
+        _listIncompleteTasks.value = incomplete
+        _listOverdueTasks.value = overdue
+
+
+
+    }
+
+
+    fun addTask(task: Task) {
         repository.addTask(task)
     }
 
-    fun updateTask(task: Task){
+    fun updateTask(task: Task) {
         repository.updateTask(task)
     }
 
-    fun deleteTask(task: Task){
+    fun deleteTask(task: Task) {
         repository.deleteTask(task)
     }
 

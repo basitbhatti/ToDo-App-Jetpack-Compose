@@ -90,11 +90,9 @@ fun HomeScreen(
                 factory = MainVMFactory(repository)
             )
 
-            val listToDos by viewModel.taskList.observeAsState(emptyList())
-
-            val listCompletedTasks = ArrayList<Task>()
-            val listIncompleteTasks = ArrayList<Task>()
-            val overdueTasks = ArrayList<Task>()
+            val listCompletedTasks = viewModel.listCompleteTasks.observeAsState(emptyList())
+            val listIncompleteTasks = viewModel.listIncompleteTasks.observeAsState(emptyList())
+            val listOverdueTasks = viewModel.listOverdueTasks.observeAsState(emptyList())
 
             val listTabs = listOf(
                 TabItem(
@@ -128,29 +126,10 @@ fun HomeScreen(
                 selectedTabIndex = pagerState.currentPage
             }
 
-            var dateToday by remember {
-                mutableStateOf(LocalDate.now())
-            }
-
-            var formatter = DateTimeFormatter.ofPattern("MMM dd yyyy")
-
-            listToDos.forEach {
-
-                val dueDate = LocalDate.parse(it.dueDate, formatter)
-
-                if (it.isCompleted) {
-                    listCompletedTasks.add(it)
-                } else if (dueDate.isBefore(dateToday)) {
-                    overdueTasks.add(it)
-                } else {
-                    listIncompleteTasks.add(it)
-                }
-            }
-
-            val listOfLists = ArrayList<ArrayList<Task>>()
-            listOfLists.add(listIncompleteTasks)
-            listOfLists.add(overdueTasks)
-            listOfLists.add(listCompletedTasks)
+            val listOfLists = ArrayList<List<Task>>()
+            listOfLists.add(listIncompleteTasks.value)
+            listOfLists.add(listOverdueTasks.value)
+            listOfLists.add(listCompletedTasks.value)
 
             TabRow(selectedTabIndex = selectedTabIndex) {
 
@@ -159,11 +138,9 @@ fun HomeScreen(
                         selected = selectedTabIndex == index,
                         onClick = {
                             selectedTabIndex = index
-                        },
-                        text = {
+                        }, text = {
                             Text(text = tab.title)
-                        },
-                        icon = {
+                        }, icon = {
                             Icon(
                                 imageVector = if (selectedTabIndex == index) {
                                     tab.selectedIcon
@@ -259,7 +236,7 @@ fun TaskItem(modifier: Modifier = Modifier, task: Task, repository: Repository) 
                     )
                 }
 
-                Box(modifier = Modifier.weight(20f)) {
+                Box(modifier = Modifier.weight(20f), contentAlignment = Alignment.Center) {
                     Checkbox(checked = isCompleted, onCheckedChange = {
                         val newTask = task
                         newTask.isCompleted = it
