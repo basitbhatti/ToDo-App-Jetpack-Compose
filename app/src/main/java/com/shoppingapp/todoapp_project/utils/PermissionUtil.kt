@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 
 class PermissionUtil(val activity: Activity, val requestCode : Int) {
 
-    val permissions = listOf(
+    val permissions = listOf (
         Manifest.permission.SCHEDULE_EXACT_ALARM,
         Manifest.permission.USE_EXACT_ALARM,
         Manifest.permission.POST_NOTIFICATIONS

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,8 +13,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material.icons.outlined.List
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -21,15 +30,16 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,8 +54,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.shoppingapp.todoapp_project.R
 import com.shoppingapp.todoapp_project.db.TaskDatabase
+import com.shoppingapp.todoapp_project.model.TabItem
 import com.shoppingapp.todoapp_project.model.Task
 import com.shoppingapp.todoapp_project.mvvm.MainVMFactory
 import com.shoppingapp.todoapp_project.mvvm.MainViewModel
@@ -56,58 +68,139 @@ import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier.background(Color(0xFFF9F9F9)), navController: NavHostController) {
+fun HomeScreen(
+    modifier: Modifier = Modifier.background(Color(0xFFF9F9F9)), navController: NavHostController
+) {
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Todo App") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = Color.Black
-                )
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                navController.navigate(Screen.AddTaskScreen.route)
-            }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Task Buton")
-            }
+    Scaffold(modifier = modifier.fillMaxSize(), floatingActionButton = {
+        FloatingActionButton(onClick = {
+            navController.navigate(Screen.AddTaskScreen.route)
+        }) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Add Task Buton")
         }
-    ) {
+    }) {
 
         Column(
             modifier = modifier.padding(it)
         ) {
 
-            val task = Task(0, "Do something.", "At your office", "Sept 26 2024", "12:12", false)
-
             val repository = Repository(TaskDatabase.getInstance(LocalContext.current).getDao())
 
-            val viewModel : MainViewModel = viewModel (
+            val viewModel: MainViewModel = viewModel(
                 factory = MainVMFactory(repository)
             )
 
             val listToDos by viewModel.taskList.observeAsState(emptyList())
 
-            LazyColumn {
-                items(listToDos){ task->
-                    TaskItem(
-                        task = task,
-                        repository = repository
+            val listCompletedTasks = ArrayList<Task>()
+            val listIncompleteTasks = ArrayList<Task>()
+            val overdueTasks = ArrayList<Task>()
+
+            val listTabs = listOf(
+                TabItem(
+                    title = "ToDo",
+                    selectedIcon = Icons.Filled.List,
+                    unselectedIcon = Icons.Outlined.List
+                ), TabItem(
+                    title = "Overdue",
+                    selectedIcon = Icons.Filled.DateRange,
+                    unselectedIcon = Icons.Outlined.DateRange
+                ), TabItem(
+                    title = "Completed",
+                    selectedIcon = Icons.Filled.Done,
+                    unselectedIcon = Icons.Outlined.Done
+                )
+            )
+
+            var selectedTabIndex by remember {
+                mutableIntStateOf(0)
+            }
+
+            var pagerState = rememberPagerState {
+                listTabs.size
+            }
+
+            LaunchedEffect(selectedTabIndex) {
+                pagerState.animateScrollToPage(selectedTabIndex)
+            }
+
+            LaunchedEffect(pagerState.currentPage) {
+                selectedTabIndex = pagerState.currentPage
+            }
+
+            var dateToday by remember {
+                mutableStateOf(LocalDate.now())
+            }
+
+            var formatter = DateTimeFormatter.ofPattern("MMM dd yyyy")
+
+            listToDos.forEach {
+
+                val dueDate = LocalDate.parse(it.dueDate, formatter)
+
+                if (it.isCompleted) {
+                    listCompletedTasks.add(it)
+                } else if (dueDate.isBefore(dateToday)) {
+                    overdueTasks.add(it)
+                } else {
+                    listIncompleteTasks.add(it)
+                }
+            }
+
+            val listOfLists = ArrayList<ArrayList<Task>>()
+            listOfLists.add(listIncompleteTasks)
+            listOfLists.add(overdueTasks)
+            listOfLists.add(listCompletedTasks)
+
+            TabRow(selectedTabIndex = selectedTabIndex) {
+
+                listTabs.forEachIndexed { index, tab ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = {
+                            selectedTabIndex = index
+                        },
+                        text = {
+                            Text(text = tab.title)
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = if (selectedTabIndex == index) {
+                                    tab.selectedIcon
+                                } else tab.unselectedIcon, contentDescription = tab.title
+                            )
+                        },
                     )
                 }
             }
+
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .weight(1f)
+            ) { index ->
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(listOfLists.get(selectedTabIndex)) { task ->
+                        TaskItem(
+                            task = task, repository = repository
+                        )
+                    }
+                }
+            }
+
+
         }
     }
 
 }
 
+
 @Composable
 fun TaskItem(modifier: Modifier = Modifier, task: Task, repository: Repository) {
-
 
     val viewModel: MainViewModel = viewModel(
         factory = MainVMFactory(repository)
@@ -116,7 +209,6 @@ fun TaskItem(modifier: Modifier = Modifier, task: Task, repository: Repository) 
     var isCompleted by remember {
         mutableStateOf(task.isCompleted)
     }
-
 
     var todaysDate by remember {
         mutableStateOf(LocalDate.now())
@@ -141,8 +233,7 @@ fun TaskItem(modifier: Modifier = Modifier, task: Task, repository: Repository) 
     Card(
         colors = CardDefaults.cardColors(
             containerColor = Color.White
-        ),
-        modifier = modifier
+        ), modifier = modifier
             .fillMaxWidth()
             .height(140.dp)
             .padding(10.dp)
@@ -192,7 +283,7 @@ fun TaskItem(modifier: Modifier = Modifier, task: Task, repository: Repository) 
 
             Divider(
                 thickness = 1.dp,
-                color = Color.Gray,
+                color = Color.LightGray,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 15.dp, vertical = 7.5.dp)
@@ -234,8 +325,12 @@ fun TaskItem(modifier: Modifier = Modifier, task: Task, repository: Repository) 
 private fun Preview() {
     val repository = Repository(TaskDatabase.getInstance(LocalContext.current).getDao())
 
-    TaskItem(
-        task = Task(0, "This is a task", "Description....", "", "", false),
-        repository = repository
-    )
+//    TaskItem(
+//        task = Task(0, "This is a task", "Description....", "", "", false),
+//        repository = repository
+//    )
+
+    HomeScreen(navController = rememberNavController())
+
+
 }
