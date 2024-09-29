@@ -80,7 +80,7 @@ fun HomeScreen(
         }
     }) {
 
-        Column(
+        Column (
             modifier = modifier.padding(it)
         ) {
 
@@ -220,7 +220,7 @@ fun TaskItem(modifier: Modifier = Modifier, task: Task, repository: Repository) 
             modifier = modifier.fillMaxSize()
         ) {
 
-            Row(
+            Row (
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(horizontal = 15.dp),

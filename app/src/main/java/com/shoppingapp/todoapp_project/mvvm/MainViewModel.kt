@@ -48,12 +48,9 @@ class MainViewModel(val repository: Repository) : ViewModel() {
 
         }
 
-
         _listCompleteTasks.value = complete
         _listIncompleteTasks.value = incomplete
         _listOverdueTasks.value = overdue
-
-
 
     }
 
