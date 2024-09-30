@@ -40,7 +40,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -80,7 +79,7 @@ fun HomeScreen(
         }
     }) {
 
-        Column (
+        Column(
             modifier = modifier.padding(it)
         ) {
 
@@ -138,9 +137,11 @@ fun HomeScreen(
                         selected = selectedTabIndex == index,
                         onClick = {
                             selectedTabIndex = index
-                        }, text = {
+                        },
+                        text = {
                             Text(text = tab.title)
-                        }, icon = {
+                        },
+                        icon = {
                             Icon(
                                 imageVector = if (selectedTabIndex == index) {
                                     tab.selectedIcon
@@ -183,28 +184,17 @@ fun TaskItem(modifier: Modifier = Modifier, task: Task, repository: Repository) 
         factory = MainVMFactory(repository)
     )
 
-    var isCompleted by remember {
-        mutableStateOf(task.isCompleted)
-    }
-
-    var todaysDate by remember {
-        mutableStateOf(LocalDate.now())
-    }
-
     val formattedTodaysDate by remember {
         derivedStateOf {
-            DateTimeFormatter.ofPattern("MMM dd yyyy").format(todaysDate)
+            DateTimeFormatter.ofPattern("MMM dd yyyy").format(LocalDate.now())
         }
     }
 
-    var dueDate by remember {
-        mutableStateOf(task.dueDate)
-    }
 
-    val displayDateText = if (dueDate == formattedTodaysDate) {
+    val displayDateText = if (task.dueDate == formattedTodaysDate) {
         "Today"
     } else {
-        dueDate
+        task.dueDate
     }
 
     Card(
@@ -220,7 +210,7 @@ fun TaskItem(modifier: Modifier = Modifier, task: Task, repository: Repository) 
             modifier = modifier.fillMaxSize()
         ) {
 
-            Row (
+            Row(
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(horizontal = 15.dp),
@@ -237,10 +227,10 @@ fun TaskItem(modifier: Modifier = Modifier, task: Task, repository: Repository) 
                 }
 
                 Box(modifier = Modifier.weight(20f), contentAlignment = Alignment.Center) {
-                    Checkbox(checked = isCompleted, onCheckedChange = {
+                    Checkbox(checked = task.isCompleted, onCheckedChange = {
                         val newTask = task
                         newTask.isCompleted = it
-                        isCompleted = it
+                        task.isCompleted = it
 
                         viewModel.updateTask(newTask)
 
