@@ -17,12 +17,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.outlined.DateRange
-import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material.icons.outlined.List
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -46,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,7 +63,7 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier.background(Color(0xFFF9F9F9)), navController: NavHostController
+    modifier: Modifier = Modifier.background(Color(0xFFF5F3FB)), navController: NavHostController
 ) {
 
     Scaffold(modifier = modifier.fillMaxSize(), floatingActionButton = {
@@ -96,16 +91,16 @@ fun HomeScreen(
             val listTabs = listOf(
                 TabItem(
                     title = "ToDo",
-                    selectedIcon = Icons.Filled.List,
-                    unselectedIcon = Icons.Outlined.List
+                    selectedIcon = painterResource(id = R.drawable.ic_todo_filled),
+                    unselectedIcon = painterResource(id = R.drawable.ic_todo_outlined)
                 ), TabItem(
                     title = "Overdue",
-                    selectedIcon = Icons.Filled.DateRange,
-                    unselectedIcon = Icons.Outlined.DateRange
+                    selectedIcon = painterResource(id = R.drawable.ic_overdue_filled),
+                    unselectedIcon = painterResource(id = R.drawable.ic_overdue_outlined)
                 ), TabItem(
                     title = "Completed",
-                    selectedIcon = Icons.Filled.Done,
-                    unselectedIcon = Icons.Outlined.Done
+                    selectedIcon = painterResource(id = R.drawable.ic_completed_filled),
+                    unselectedIcon = painterResource(id = R.drawable.ic_completed_outlined)
                 )
             )
 
@@ -143,7 +138,7 @@ fun HomeScreen(
                         },
                         icon = {
                             Icon(
-                                imageVector = if (selectedTabIndex == index) {
+                                painter = if (selectedTabIndex == index) {
                                     tab.selectedIcon
                                 } else tab.unselectedIcon, contentDescription = tab.title
                             )
