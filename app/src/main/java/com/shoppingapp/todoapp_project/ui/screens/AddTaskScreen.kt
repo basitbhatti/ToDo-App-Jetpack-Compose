@@ -71,10 +71,6 @@ fun AddTaskScreen(
         mutableStateOf("")
     }
 
-    var textDueDate by remember {
-        mutableStateOf("")
-    }
-
     var textIsCompleted by remember {
         mutableStateOf(false)
     }
@@ -283,7 +279,6 @@ fun AddTaskScreen(
             dueTime = it
         }
     }
-
 
     MaterialDialog(
         dialogState = datePickerState,

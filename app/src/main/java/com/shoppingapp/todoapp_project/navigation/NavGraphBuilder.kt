@@ -17,7 +17,8 @@ fun NavGraphBuilder(navHostController: NavHostController, context : Context) {
     NavHost(navController = navHostController, startDestination = Screen.HomeScreen.route){
 
         composable(Screen.HomeScreen.route){
-            HomeScreen(navController = navHostController)
+            val repository = Repository(TaskDatabase.getInstance(context).getDao())
+            HomeScreen(navController = navHostController, repository = repository)
         }
 
         composable(Screen.AddTaskScreen.route){

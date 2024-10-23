@@ -60,14 +60,17 @@ class MainViewModel(val repository: Repository) : ViewModel() {
 
     fun addTask(task: Task) {
         repository.addTask(task)
+        categorizeLists(repository.listTasks.value ?: emptyList(), LocalDate.now())
     }
 
     fun updateTask(task: Task) {
         repository.updateTask(task)
+        categorizeLists(repository.listTasks.value ?: emptyList(), LocalDate.now())
     }
 
     fun deleteTask(task: Task) {
         repository.deleteTask(task)
+        categorizeLists(repository.listTasks.value ?: emptyList(), LocalDate.now())
     }
 
 }
